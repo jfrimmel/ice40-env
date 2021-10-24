@@ -7,6 +7,14 @@ device = lp8k
 package = cm81
 f_in = 16
 
+## end of user definitions
+
+build_dir = build
+
+rule create-build-directory
+    description = Create the build directory
+    command = mkdir -p $out
+
 # run the synthese to produce a JSON output
 rule synthesize
     description = Synthesize Verilog design
@@ -25,7 +33,8 @@ rule gen-pll
     description = Generate PLL settings file
     command = icepll -i $f_in -o 100 -m -f $out
 
-build pll.v: gen-pll
-build $project.json: synthesize $top.v pll.v
-build $project.asc: place-n-route $project.json
-build $project.bin: pack $project.asc
+build $build_dir: create-build-directory
+build $build_dir/pll.v: gen-pll
+build $build_dir/$project.json: synthesize $top.v $build_dir/pll.v
+build $build_dir/$project.asc: place-n-route $build_dir/$project.json
+build $build_dir/$project.bin: pack $build_dir/$project.asc
