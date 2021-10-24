@@ -18,11 +18,11 @@ rule create-build-directory
 # run the synthese to produce a JSON output
 rule synthesize
     description = Synthesize Verilog design
-    command = yosys -p 'synth_ice40 -top $top -json $out' $in
+    command = yosys -q -p 'synth_ice40 -top $top -json $out' $in
 
 rule place-n-route
     description = Place'n'route
-    command = nextpnr-ice40 --$device --package $package --top $top --json $in --pcf constraints.pcf --asc $out
+    command = nextpnr-ice40 --quiet --$device --package $package --top $top --json $in --pcf constraints.pcf --asc $out
 
 rule pack
     description = Generating the final FPGA bitstream
