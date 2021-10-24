@@ -1,0 +1,31 @@
+## Project-specific settings
+project = template
+top = top
+
+## board/device-specific settings
+device = lp8k
+package = cm81
+f_in = 16
+
+# run the synthese to produce a JSON output
+rule synthesize
+    description = Synthesize Verilog design
+    command = yosys -p 'synth_ice40 -top $top -json $out' $in
+
+rule place-n-route
+    description = Place'n'route
+    command = nextpnr-ice40 --$device --package $package --top $top --json $in --pcf constraints.pcf --asc $out
+
+rule pack
+    description = Generating the final FPGA bitstream
+    command = icepack $in $out
+
+
+rule gen-pll
+    description = Generate PLL settings file
+    command = icepll -i $f_in -o 100 -m -f $out
+
+build pll.v: gen-pll
+build $project.json: synthesize $top.v pll.v
+build $project.asc: place-n-route $project.json
+build $project.bin: pack $project.asc
