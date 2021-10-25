@@ -36,3 +36,29 @@ cd ..
 Also, make sure, that your user has the permission to access the serial port, if your programmer uses the serial port.
 Depending on your Linux distribution you have to add yourself to either the [`dialout`](https://wiki.debian.org/SystemGroups#Other_System_Groups) or [`uucp`](https://wiki.archlinux.org/title/Users_and_groups#User_groups) group.
 
+## Project layout
+
+The project is rather simple: there is a `build.ninja`-file, which is the description for the ninja build system.
+This file also contains the basic project properties, like
+
+- the project name
+- information about the FPGA/board used
+- the Verilog input files
+
+Therefore you'll have to edit this file at the start of the project and if you add/remove a Verilog file.
+
+Furthermore there is the top-level module file `top.v`, which also contains a small example, which blinks an LED.
+
+The `constraints.pcf` file assigns the names to the I/O ports used.
+
+Note, that the PLL settings is auto-generated during the build process.
+
+## Building
+
+To build the FPGA bitstream, simply execute
+
+```bash
+ninja
+# or if you want to upload the code directly
+ninja && tinyprog -p build/template.bin
+```
